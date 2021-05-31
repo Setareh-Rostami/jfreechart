@@ -36,6 +36,7 @@
 
 package org.jfree.chart.axis;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import org.jfree.chart.api.RectangleEdge;
@@ -190,5 +191,32 @@ public class AxisState {
      */
     public void setMax(double max) {
         this.max = max;
+    }
+
+    Rectangle2D getRectangle2D(double cursor, Rectangle2D dataArea, RectangleEdge edge) {
+        Rectangle2D hotspot = null;
+        switch (edge) {
+            case TOP:
+                hotspot = new Rectangle2D.Double(dataArea.getX(),
+                        getCursor(), dataArea.getWidth(),
+                        cursor - getCursor());
+                break;
+            case BOTTOM:
+                hotspot = new Rectangle2D.Double(dataArea.getX(), cursor,
+                        dataArea.getWidth(), getCursor() - cursor);
+                break;
+            case LEFT:
+                hotspot = new Rectangle2D.Double(getCursor(),
+                        dataArea.getY(), cursor - getCursor(),
+                        dataArea.getHeight());
+                break;
+            case RIGHT:
+                hotspot = new Rectangle2D.Double(cursor, dataArea.getY(),
+                        getCursor() - cursor, dataArea.getHeight());
+                break;
+            default:
+                break;
+        }
+        return hotspot;
     }
 }

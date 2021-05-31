@@ -1077,29 +1077,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         if (plotState == null || plotState.getOwner() == null) {
             return;  // no need to create entity if we can't save it anyways...
         }
-        Rectangle2D hotspot = null;
-        switch (edge) {
-            case TOP:
-                hotspot = new Rectangle2D.Double(dataArea.getX(),
-                        state.getCursor(), dataArea.getWidth(),
-                        cursor - state.getCursor());
-                break;
-            case BOTTOM:
-                hotspot = new Rectangle2D.Double(dataArea.getX(), cursor,
-                        dataArea.getWidth(), state.getCursor() - cursor);
-                break;
-            case LEFT:
-                hotspot = new Rectangle2D.Double(state.getCursor(),
-                        dataArea.getY(), cursor - state.getCursor(),
-                        dataArea.getHeight());
-                break;
-            case RIGHT:
-                hotspot = new Rectangle2D.Double(cursor, dataArea.getY(),
-                        state.getCursor() - cursor, dataArea.getHeight());
-                break;
-            default:
-                break;
-        }
+        Rectangle2D hotspot = state.getRectangle2D(cursor, dataArea, edge);
         EntityCollection e = plotState.getOwner().getEntityCollection();
         if (e != null) {
             e.add(new AxisEntity(hotspot, this));
@@ -1191,10 +1169,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         if (bounds != null) {
             RectangleInsets insets = getLabelInsets();
             bounds = insets.createOutsetRectangle(bounds);
-            double angle = getLabelAngle();
-            if (edge == RectangleEdge.LEFT || edge == RectangleEdge.RIGHT) {
-                angle = angle - Math.PI / 2.0;
-            }
+            double angle = getAngle(edge);
             double x = bounds.getCenterX();
             double y = bounds.getCenterY();
             AffineTransform transformer
@@ -1203,6 +1178,14 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
             result = labelBounds.getBounds2D();
         }
         return result;
+    }
+
+    private double getAngle(RectangleEdge edge) {
+        double angle = getLabelAngle();
+        if (edge == RectangleEdge.LEFT || edge == RectangleEdge.RIGHT) {
+            angle = angle - Math.PI / 2.0;
+        }
+        return angle;
     }
 
     /**
@@ -1495,6 +1478,17 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      */
     protected void drawAxisLine(Graphics2D g2, double cursor,
             Rectangle2D dataArea, RectangleEdge edge) {
+        Line2D axisLine = getLine2D(cursor, dataArea, edge);
+        g2.setPaint(this.axisLinePaint);
+        g2.setStroke(this.axisLineStroke);
+        Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, 
+                RenderingHints.VALUE_STROKE_NORMALIZE);
+        g2.draw(axisLine);
+        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+    }
+
+    private Line2D getLine2D(double cursor, Rectangle2D dataArea, RectangleEdge edge) {
         Line2D axisLine = null;
         double x = dataArea.getX();
         double y = dataArea.getY();
@@ -1507,13 +1501,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         } else if (edge == RectangleEdge.RIGHT) {
             axisLine = new Line2D.Double(cursor, y, cursor, dataArea.getMaxY());
         }
-        g2.setPaint(this.axisLinePaint);
-        g2.setStroke(this.axisLineStroke);
-        Object saved = g2.getRenderingHint(RenderingHints.KEY_STROKE_CONTROL);
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, 
-                RenderingHints.VALUE_STROKE_NORMALIZE);
-        g2.draw(axisLine);
-        g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, saved);
+        return axisLine;
     }
 
     /**
