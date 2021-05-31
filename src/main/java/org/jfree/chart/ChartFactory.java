@@ -309,10 +309,7 @@ public abstract class ChartFactory {
         }
 
         List keys = dataset.getKeys();
-        DefaultPieDataset series = null;
-        if (showDifference) {
-            series = new DefaultPieDataset();
-        }
+        DefaultPieDataset series = getDefaultPieDataset(showDifference);
 
         double colorPerPercent = 255.0 / percentDiffForMaxScale;
         for (Iterator it = keys.iterator(); it.hasNext();) {
@@ -375,6 +372,14 @@ public abstract class ChartFactory {
         return chart;
     }
 
+    private static DefaultPieDataset getDefaultPieDataset(boolean showDifference) {
+        DefaultPieDataset series = null;
+        if (showDifference) {
+            series = new DefaultPieDataset();
+        }
+        return series;
+    }
+
     /**
      * Creates a pie chart with default settings that compares 2 datasets.
      * The colour of each section will be determined by the move from the value
@@ -430,10 +435,7 @@ public abstract class ChartFactory {
         }
 
         List keys = dataset.getKeys();
-        DefaultPieDataset series = null;
-        if (showDifference) {
-            series = new DefaultPieDataset();
-        }
+        DefaultPieDataset series = getDefaultPieDataset(showDifference);
 
         double colorPerPercent = 255.0 / percentDiffForMaxScale;
         for (Iterator it = keys.iterator(); it.hasNext();) {
@@ -656,21 +658,7 @@ public abstract class ChartFactory {
         ValueAxis valueAxis = new NumberAxis(valueAxisLabel);
 
         BarRenderer renderer = new BarRenderer();
-        if (orientation == PlotOrientation.HORIZONTAL) {
-            ItemLabelPosition position1 = new ItemLabelPosition(
-                    ItemLabelAnchor.OUTSIDE3, TextAnchor.CENTER_LEFT);
-            renderer.setDefaultPositiveItemLabelPosition(position1);
-            ItemLabelPosition position2 = new ItemLabelPosition(
-                    ItemLabelAnchor.OUTSIDE9, TextAnchor.CENTER_RIGHT);
-            renderer.setDefaultNegativeItemLabelPosition(position2);
-        } else if (orientation == PlotOrientation.VERTICAL) {
-            ItemLabelPosition position1 = new ItemLabelPosition(
-                    ItemLabelAnchor.OUTSIDE12, TextAnchor.BOTTOM_CENTER);
-            renderer.setDefaultPositiveItemLabelPosition(position1);
-            ItemLabelPosition position2 = new ItemLabelPosition(
-                    ItemLabelAnchor.OUTSIDE6, TextAnchor.TOP_CENTER);
-            renderer.setDefaultNegativeItemLabelPosition(position2);
-        }
+        getOrientationObject(orientation).createBarChart(renderer);
         if (tooltips) {
             renderer.setDefaultToolTipGenerator(
                     new StandardCategoryToolTipGenerator());
@@ -1205,15 +1193,9 @@ public abstract class ChartFactory {
 
         XYPlot plot = new XYPlot(dataset, xAxis, yAxis, null);
 
-        XYToolTipGenerator toolTipGenerator = null;
-        if (tooltips) {
-            toolTipGenerator = new StandardXYToolTipGenerator();
-        }
+        XYToolTipGenerator toolTipGenerator = getXyToolTipGenerator(tooltips);
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
         XYItemRenderer renderer = new XYLineAndShapeRenderer(false, true);
         renderer.setDefaultToolTipGenerator(toolTipGenerator);
         renderer.setURLGenerator(urlGenerator);
@@ -1225,6 +1207,14 @@ public abstract class ChartFactory {
         currentTheme.apply(chart);
         return chart;
 
+    }
+
+    private static XYToolTipGenerator getXyToolTipGenerator(boolean tooltips) {
+        XYToolTipGenerator toolTipGenerator = null;
+        if (tooltips) {
+            toolTipGenerator = new StandardXYToolTipGenerator();
+        }
+        return toolTipGenerator;
     }
 
     /**
@@ -1371,15 +1361,9 @@ public abstract class ChartFactory {
         plot.setOrientation(orientation);
         plot.setForegroundAlpha(0.5f);
 
-        XYToolTipGenerator tipGenerator = null;
-        if (tooltips) {
-            tipGenerator = new StandardXYToolTipGenerator();
-        }
+        XYToolTipGenerator tipGenerator = getXyToolTipGenerator(tooltips);
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
 
         plot.setRenderer(new XYAreaRenderer(XYAreaRenderer.AREA, tipGenerator,
                 urlGenerator));
@@ -1438,15 +1422,9 @@ public abstract class ChartFactory {
         xAxis.setLowerMargin(0.0);
         xAxis.setUpperMargin(0.0);
         NumberAxis yAxis = new NumberAxis(yAxisLabel);
-        XYToolTipGenerator toolTipGenerator = null;
-        if (tooltips) {
-            toolTipGenerator = new StandardXYToolTipGenerator();
-        }
+        XYToolTipGenerator toolTipGenerator = getXyToolTipGenerator(tooltips);
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
         StackedXYAreaRenderer2 renderer = new StackedXYAreaRenderer2(
                 toolTipGenerator, urlGenerator);
         renderer.setOutline(true);
@@ -1460,6 +1438,14 @@ public abstract class ChartFactory {
         currentTheme.apply(chart);
         return chart;
 
+    }
+
+    private static XYURLGenerator getXyurlGenerator(boolean urls) {
+        XYURLGenerator urlGenerator = null;
+        if (urls) {
+            urlGenerator = new StandardXYURLGenerator();
+        }
+        return urlGenerator;
     }
 
     /**
@@ -1560,15 +1546,9 @@ public abstract class ChartFactory {
         NumberAxis yAxis = new NumberAxis(yAxisLabel);
         yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-        XYToolTipGenerator toolTipGenerator = null;
-        if (tooltips) {
-            toolTipGenerator = new StandardXYToolTipGenerator();
-        }
+        XYToolTipGenerator toolTipGenerator = getXyToolTipGenerator(tooltips);
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
         XYItemRenderer renderer = new XYStepRenderer(toolTipGenerator,
                 urlGenerator);
 
@@ -1625,15 +1605,9 @@ public abstract class ChartFactory {
         xAxis.setAutoRangeIncludesZero(false);
         NumberAxis yAxis = new NumberAxis(yAxisLabel);
 
-        XYToolTipGenerator toolTipGenerator = null;
-        if (tooltips) {
-            toolTipGenerator = new StandardXYToolTipGenerator();
-        }
+        XYToolTipGenerator toolTipGenerator = getXyToolTipGenerator(tooltips);
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
         XYItemRenderer renderer = new XYStepAreaRenderer(
                 XYStepAreaRenderer.AREA_AND_SHAPES, toolTipGenerator,
                 urlGenerator);
@@ -1711,10 +1685,7 @@ public abstract class ChartFactory {
                 = StandardXYToolTipGenerator.getTimeSeriesInstance();
         }
 
-        XYURLGenerator urlGenerator = null;
-        if (urls) {
-            urlGenerator = new StandardXYURLGenerator();
-        }
+        XYURLGenerator urlGenerator = getXyurlGenerator(urls);
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true,
                 false);
@@ -2044,4 +2015,13 @@ public abstract class ChartFactory {
         return chart;
     }
 
+    private static Orientation getOrientationObject(PlotOrientation orientation) {
+        switch (orientation) {
+            case VERTICAL:
+                return new Vertical();
+            case HORIZONTAL:
+                return new Horizontal();
+        }
+        return null;
+    }
 }
