@@ -1,0 +1,2 @@
+TARGET_CLASS,criterion,Coverage,Total_Goals,Covered_Goals,Total_Branches,Predicates,LineCoverage,BranchCoverage,OutputCoverage,BranchCoverageBitString,Size,Length,MutationScore
+org.jfree.chart.ChartColor,LINE;BRANCH;EXCEPTION;WEAKMUTATION;OUTPUT;METHOD;METHODNOEXCEPTION;CBRANCH,0.8541666666666666,205,204,0,0,1.0,1.0,0.3333333333333333,11,3,3,0.1518324607329843
